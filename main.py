@@ -5,6 +5,16 @@ from typing import List
 
 # Create the FastAPI app
 app = FastAPI()
+from fastapi.middleware.cors import CORSMiddleware
+
+# add this *right after* you define `app = FastAPI()`
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # for now allow all origins
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Simple in-memory database
 goals_db = []
