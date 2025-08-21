@@ -1,1 +1,100 @@
-<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <meta name="description" content="Study Goals App helps you track and achieve your learning goals with ease."> <meta name="keywords" content="study goals, productivity, learning app"> <meta property="og:title" content="Study Goals App"> <meta property="og:image" content="https://study-goals-app.com/og-image.jpg"> <title>Study Goals App</title> <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"> <style> body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #edf2f7, #e2e8f0); color: #2d3748; text-align: center; } header, main { max-width: 1200px; margin: 0 auto; padding: clamp(1rem, 5vw, 2rem); animation: fadeIn 0.8s ease-out; } header h1 { font-size: clamp(1.8rem, 5vw, 2.5rem); margin: 0; } header p { font-size: clamp(1rem, 3vw, 1.2rem); color: #718096; margin-top: 0.5rem; } header img { max-width: 100%; border-radius: 10px; margin-top: 1rem; } button { background: #f56565; color: #fff; border: none; padding: 1rem 2rem; font-size: clamp(0.9rem, 3vw, 1.1rem); font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.1); } button:hover { background: #e53e3e; transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); } button:disabled { background: #cbd5e0; cursor: not-allowed; } #output { margin-top: 2rem; font-size: clamp(1rem, 3vw, 1.2rem); padding: 1.5rem; background: #fff; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); color: #2d3748; } #output.loading { display: flex; align-items: center; justify-content: center; min-height: 100px; } #output.loading::after { content: ''; width: 24px; height: 24px; border: 3px solid #f56565; border-top: 3px solid transparent; border-radius: 50%; animation: spin 1s linear infinite; } footer { padding: 2rem; background: #2d3748; color: #fff; margin-top: 2rem; } footer a { color: #f56565; text-decoration: none; margin: 0 0.5rem; } @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } } @keyframes spin { to { transform: rotate(360deg); } } @media (max-width: 768px) { header, main { padding: 1rem; } button { padding: 0.8rem 1.5rem; } #output { padding: 1rem; } } </style> </head> <body> <header> <h1>📚 Study Goals App</h1> <p>Track your learning goals and stay motivated every day</p> <img src="https://via.placeholder.com/600x300?text=Study+Illustration" alt="Illustration of a student studying" loading="lazy"> </header> <main> <button>Show My Goals</button> <div id="output" aria-live="polite">Click the button to load your study goals.</div> </main> <footer> <p>&copy; 2025 Study Goals App. <a href="/about">About</a> | <a href="/contact">Contact</a></p> </footer> <script> const API_URL = 'https://study-goals-app.onrender.com/goals'; const output = document.getElementById('output'); const button = document.querySelector('button'); function debounce(func, wait) { let timeout; return function (...args) { clearTimeout(timeout); timeout = setTimeout(() => func.apply(this, args), wait); }; } async function fetchGoals() { output.classList.add('loading'); button.disabled = true; const controller = new AbortController(); const timeoutId = setTimeout(() => controller.abort(), 10000); try { const response = await fetch(API_URL, { signal: controller.signal }); clearTimeout(timeoutId); if (!response.ok) { if (response.status === 404) { throw new Error('Goals not found. Please try again later.'); } else if (response.status === 500) { throw new Error('Server error. Please contact support.'); } throw new Error(`HTTP error ${response.status}`); } const data = await response.json(); if (!Array.isArray(data.goals)) { throw new Error('Invalid data format received from server.'); } output.innerText = `🎯 Your Goals: ${data.goals.join(', ')}`; localStorage.setItem('goals', JSON.stringify(data.goals)); } catch (error) { if (error.name === 'AbortError') { output.innerText = '⚠️ Request timed out. Please try again.'; } else { output.innerText = `⚠️ Error: ${error.message}`; console.error('Fetch error:', error); } } finally { output.classList.remove('loading'); button.disabled = false; } } document.addEventListener('DOMContentLoaded', () => { const cachedGoals = localStorage.getItem('goals'); if (cachedGoals) { output.innerText = `🎯 Your Goals: ${JSON.parse(cachedGoals).join(', ')}`; } }); button.addEventListener('click', debounce(fetchGoals, 300)); </script> </body> </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Study Goals App</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom right, #4f46e5, #3b82f6);
+      color: #fff;
+      text-align: center;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    header {
+      margin-bottom: 30px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 1.1rem;
+      max-width: 500px;
+      margin: 0 auto 20px;
+    }
+
+    button {
+      background-color: #10b981;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #059669;
+    }
+
+    #goals {
+      margin-top: 30px;
+      text-align: left;
+      max-width: 500px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    .goal-item {
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📘 Study Goals App</h1>
+    <p>Track your goals, stay consistent, and achieve more every day.</p>
+  </header>
+
+  <button id="loadGoals">Show My Goals</button>
+  <div id="goals"></div>
+
+  <script>
+    const button = document.getElementById("loadGoals");
+    const goalsDiv = document.getElementById("goals");
+
+    button.addEventListener("click", async () => {
+      goalsDiv.innerHTML = "⏳ Loading your goals...";
+      try {
+        const res = await fetch("https://study-goals-app.onrender.com");
+        if (!res.ok) throw new Error("Network response was not ok");
+        const data = await res.json();
+        goalsDiv.innerHTML = "";
+        data.forEach((goal) => {
+          const div = document.createElement("div");
+          div.className = "goal-item";
+          div.textContent = goal;
+          goalsDiv.appendChild(div);
+        });
+      } catch (err) {
+        goalsDiv.innerHTML = "⚠️ Failed to load goals. Please try again.";
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>
